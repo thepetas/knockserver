@@ -1,0 +1,20 @@
+knockserver - Port knocking daemon (server part)
+
+Version 1, December 2015
+
+Files: *
+Copyright: 2015 Petr Panský <panskpe1@fit.cvut.cz>
+Licence: GPL
+
+
+Licence: GPL
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published 
+    by the Free Software Foundation.
+    .
+    4 function (process_packet, set_ip_header, get_tcp_packet, get_udp_packet)
+    in knockserver.c was used from:
+    http://www.binarytides.com/packet-sniffer-code-c-linux/ 
+    .
+    Redistribute program with this copyright file and copy with original owner, thank you!
+    General Public License can be found in `/usr/share/common-licenses/GPL'
