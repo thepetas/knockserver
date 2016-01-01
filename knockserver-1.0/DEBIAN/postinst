@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+if [ -x "/etc/init.d/knockserver" ] ; then
+	update-rc.d knockserver defaults >/dev/null
+	if [ -x "`which invoke-rc.d >/dev/null`" ] ; then
+		invoke-rc.d knockserver start || exit $?
+	else
+		/etc/init.d/knockserver start || exit $?
+	fi
+fi

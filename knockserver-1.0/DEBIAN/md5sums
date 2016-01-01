@@ -1,0 +1,8 @@
+fb564bebdb35352641201781855f33d6  etc/knockserver.conf
+db6c0492b2ab69e4e45186d71911aded  etc/init.d/knockserver
+f0131e253bb92408a0bd2746b0bd2b1e  usr/sbin/knockserver
+664afee35790b7275c0bd5e004b39d0a  usr/bin/knockclient
+39c3bafe1e677ec30aa242606175d04d  usr/share/doc/knockserver/changelog.gz
+fd8e22917fe702d5886fd208f9b00bfb  usr/share/doc/knockserver/copyright
+f44a4848a4035d086836f621bba30df2  usr/share/man/man1/knockclient.1.gz
+6ed76647fbe27f983f8eb758330f47ba  usr/share/man/man8/knockserver.8.gz

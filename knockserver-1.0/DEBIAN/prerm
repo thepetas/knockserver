@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+if [ -x /etc/init.d/knockserver ] ; then
+	if [ -x "`which invoke-rc.d 2>/dev/null`" ] ; then
+		invoke-rc.d knockserver stop || exit $?
+	else
+		/etc/init.d/knockserver stop|| exit $?
+	fi
+fi

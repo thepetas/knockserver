@@ -1,0 +1,13 @@
+Package: knockserver
+Version: 1.0
+Section: net
+Priority: optional
+Recommends: nc
+Depends: libc6 (>= 2.2.4-4), iptables
+Architecture: amd64
+Installed-Size: 34
+Maintainer: Petr Panský <panskpe1@fit.cvut.cz>
+Description: Port knocking daemon with client script
+ Port knocking daemon which run on server and represent server part.
+ Clients are configurated in config file by admin
+ and knocking on server's port. Right sequency = acces to the server.

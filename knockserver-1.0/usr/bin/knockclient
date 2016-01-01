@@ -1,0 +1,8 @@
+#!/bin/bash
+
+server="$1"
+echo "Knocking to server $server..."
+for port in "${@:2}"
+do
+	echo -n "*" | nc -q1 -u $1 $port
+done

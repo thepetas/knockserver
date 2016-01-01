@@ -1,0 +1,164 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          knockserver
+# Required-Start:    $remote_fs $network $syslog $time
+# Required-Stop:     $remote_fs $network $syslog $time
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Port knocking daemon
+# Description:       This daemon run on the server and monitoring
+#                    and adding clients after succesed sequence
+### END INIT INFO
+
+# Author: Petr Panský <panskpe1@fit.cvut.cz>
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="Port knocking daemon"
+NAME=knockserver
+DAEMON=/usr/sbin/$NAME
+CONFFILE=/etc/$NAME.conf
+LOGFILE=/var/log/$NAME.log
+DAEMON_ARGS="-c $CONFFILE -l $LOGFILE"
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+
+do_stop() {
+	kill -INT $(cat $PIDFILE)
+	rm $PIDFILE
+}
+do_start() {
+	start-stop-daemon --start --background -m --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
+}
+
+do_reload() {
+	kill -HUP $(cat $PIDFILE)
+}
+
+do_status() {
+	status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+}
+
+test_conf(){
+	# Return
+	# 0 if config file of daemon is OK
+	# 1 if config file of daemon contain Invalid server's IP address
+	# 2 if config file of daemon doesn't exist
+	# 3 if config file of daemon doesn't contain any valid client
+	$DAEMON -c $CONFFILE -t
+	return $?
+}
+
+print_err(){
+if [ $VAL -eq 1 ] ; then
+	log_daemon_msg "Invalid server IP $DESC" "$NAME"
+elif [ $VAL -eq 2 ] ;then
+	log_daemon_msg "No config file $DESC" "$NAME"
+elif [ $VAL -eq 3 ] ;then
+	log_daemon_msg "No valid client in config $DESC" "$NAME"
+fi
+}
+
+get_state() {
+	# Return
+	# 0 if pidfile of daemon exists = daemon is running
+	# 1 if pidfile of daemon doesn't exists = daemon isn't running
+if [ -f $PIDFILE ] ; then
+	return 1;
+else
+	return 0;
+fi
+}
+
+
+case "$1" in
+  start)
+	get_state
+	if [ $? -eq 0 ] ; then
+	test_conf
+	VAL=$?
+		if [ $VAL -eq 0 ] ; then
+		do_start
+		log_daemon_msg "Starting $DESC" "$NAME"
+		else
+		print_err
+		log_daemon_msg "Cannot staring $DESC" "$NAME"
+		fi
+	else
+	log_daemon_msg "Starting $DESC" "$NAME"
+	fi
+	;;
+  stop)
+	get_state
+	if [ $? -eq 1 ] ; then
+	do_stop
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	else
+	log_daemon_msg "Not running $DESC" "$NAME"
+	fi	
+	;;
+  status)
+	do_status
+	;;
+  reload|force-reload)
+	test_conf
+	VAL=$?
+	if [ $VAL -eq 0 ] ; then
+		get_state
+		if [ $? -eq 1 ] ; then
+		log_daemon_msg "Reloading $DESC" "$NAME"
+		do_reload
+		else
+		log_daemon_msg "Reloading $DESC" "$NAME"
+		do_start
+		fi
+	else
+	print_err
+	log_daemon_msg "Cannot reloading $DESC" "$NAME"
+	fi
+	;;
+  restart)
+	test_conf
+	VAL=$?
+	if [ $VAL -eq 0 ] ; then
+		get_state
+		if [ $? -eq 1 ] ; then
+		log_daemon_msg "Restarting $DESC" "$NAME"
+		do_stop
+		do_start
+		else
+		log_daemon_msg "Restarting $DESC" "$NAME"
+		do_start
+		fi
+	else
+	print_err
+	log_daemon_msg "Cannot restarting $DESC" "$NAME"
+	fi
+	;;
+ testconfig)
+	test_conf
+	VAL="$?"
+	if [ $VAL -eq 0 ] ; then
+	log_daemon_msg "Config file - OK $DESC" "$NAME"
+	else
+	print_err
+	fi
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload|testconfig}" >&2
+	exit 3
+	;;
+esac
+
+:
